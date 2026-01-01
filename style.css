@@ -1,100 +1,124 @@
+/* =========================
+   GLOBAL RESET & MOBILE LOCK
+========================= */
 html, body {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;   /* 🔒 no page scroll */
-  touch-action: manipulation; /* 🔒 no zoom gestures */
-}
-
-:root {
-  --purple:#6a11cb;
-  --blue:#3498db;
-  --shadow:0 6px 16px rgba(0,0,0,.12);
+  overflow: hidden;
+  touch-action: manipulation;
 }
 
 * {
   -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
 }
 
+/* =========================
+   THEME VARIABLES
+========================= */
+:root {
+  --purple: #6a11cb;
+  --blue: #3498db;
+  --shadow: 0 6px 16px rgba(0,0,0,.12);
+}
 
+/* =========================
+   BODY BACKGROUND
+========================= */
 body {
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,system-ui;
-  background:linear-gradient(180deg,#6a11cb,#fff);
+  font-family: -apple-system, BlinkMacSystemFont, system-ui;
+  background: linear-gradient(180deg, var(--purple), #fff);
 }
 
-/* LOGIN */
+/* =========================
+   LOGIN SCREEN
+========================= */
 .login-screen {
   position: fixed;
   inset: 0;
-  height: 100vh;
   width: 100vw;
-  background: linear-gradient(180deg,#6a11cb,#fff);
+  height: 100vh;
+  background: linear-gradient(180deg, var(--purple), #fff);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
 }
 
-
 .login-card {
-  background:white;
-  padding:20px;
-  border-radius:16px;
-  width:280px;
-  text-align:center;
-  box-shadow:0 10px 30px rgba(0,0,0,.25);
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 320px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+
+.login-card h2 {
+  margin-bottom: 12px;
 }
 
 .login-card button {
-  width:100%;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:#3498db;
-  color:white;
-  font-size:15px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: var(--blue);
+  color: white;
+  font-size: 15px;
 }
 
 .error {
-  color:red;
-  font-size:13px;
-  margin-top:6px;
+  color: red;
+  font-size: 13px;
+  margin-top: 6px;
 }
 
-/* APP */
+/* =========================
+   APP CONTAINER
+========================= */
 .app {
-  max-width: 430px;
-  height: 100vh;               /* 🔒 full mobile screen */
-  margin: auto;
+  width: 100%;
+  max-width: 420px;
+  height: 100vh;
+  margin: 0 auto;
   padding: 12px;
-  box-sizing: border-box;
-  overflow-y: auto;            /* cards scroll inside */
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-
+/* =========================
+   HEADER
+========================= */
 h1 {
-  text-align:center;
-  color:white;
-  margin-bottom:14px;
+  text-align: center;
+  color: white;
+  margin-bottom: 14px;
 }
 
+/* =========================
+   INPUTS
+========================= */
 .input {
-  width:100%;
-  padding:10px 12px;
-  border-radius:12px;
-  border:none;
-  margin-bottom:10px;
-  font-size:14px;
-  box-shadow:var(--shadow);
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: none;
+  margin-bottom: 8px;
+  font-size: 14px;
+  box-shadow: var(--shadow);
 }
 
 .primary {
-  font-size:15px;
+  font-size: 15px;
 }
 
+/* =========================
+   FILTERS (STACKED)
+========================= */
 .filters {
   display: flex;
   flex-direction: column;
@@ -105,76 +129,108 @@ h1 {
   width: 100%;
 }
 
-
-/* DROPDOWN */
+/* =========================
+   DROPDOWN
+========================= */
 .dropdown {
-  position:relative;
+  position: relative;
 }
 
 .dropdown-menu {
-  position:absolute;
-  top:100%;
-  left:0;
-  right:0;
-  background:white;
-  border-radius:12px;
-  box-shadow:var(--shadow);
-  max-height:220px;
-  overflow-y:auto;
-  display:none;
-  z-index:50;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  max-height: 220px;
+  overflow-y: auto;
+  display: none;
+  z-index: 50;
 }
 
 .dropdown-item {
-  padding:10px;
-  font-size:13px;
-  cursor:pointer;
+  padding: 10px;
+  font-size: 13px;
+  cursor: pointer;
 }
 
 .dropdown-item:hover {
-  background:#f2f2f2;
+  background: #f2f2f2;
 }
 
-/* CARDS */
+/* =========================
+   CARDS
+========================= */
 .cards {
-  margin-top:12px;
+  margin-top: 12px;
 }
 
 .card {
-  background:white;
-  border-radius:14px;
-  padding:12px;
-  margin-bottom:10px;
-  box-shadow:var(--shadow);
+  background: white;
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
 }
 
 .card .name {
-  font-weight:600;
+  font-weight: 600;
 }
 
 .card .meta {
-  font-size:12px;
-  color:#555;
+  font-size: 12px;
+  color: #555;
 }
 
 .card a {
-  color:#3498db;
-  text-decoration:none;
+  color: var(--blue);
+  text-decoration: none;
 }
 
-/* PAGINATION */
+/* =========================
+   PAGINATION
+========================= */
 .pagination {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin:14px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0;
 }
 
 .pagination button {
-  background:#3498db;
-  color:white;
-  border:none;
-  border-radius:8px;
-  padding:6px 12px;
+  flex: 1;
+  background: var(--blue);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
 }
-  
+
+/* =========================
+   TABLET
+========================= */
+@media (min-width: 768px) {
+  .app {
+    max-width: 520px;
+  }
+}
+
+/* =========================
+   DESKTOP
+========================= */
+@media (min-width: 1024px) {
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .app {
+    max-width: 600px;
+    height: 90vh;
+    border-radius: 16px;
+  }
+}
