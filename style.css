@@ -1,80 +1,88 @@
 :root {
-  --purple: #6a11cb;
-  --blue: #3498db;
-  --card: #ffffff;
-  --shadow: 0 6px 16px rgba(0,0,0,.12);
+  --purple:#6a11cb;
+  --blue:#3498db;
+  --shadow:0 6px 16px rgba(0,0,0,.12);
 }
 
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  background: linear-gradient(180deg, #6a11cb, #ffffff);
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,system-ui;
+  background:linear-gradient(180deg,#6a11cb,#fff);
 }
 
 .app {
-  max-width: 430px;
-  margin: auto;
-  padding: 14px;
+  max-width:430px;
+  margin:auto;
+  padding:14px;
 }
 
 h1 {
-  text-align: center;
-  color: #fff;
-  font-size: 20px;
-  margin-bottom: 14px;
+  text-align:center;
+  color:#fff;
+  font-size:20px;
+  margin-bottom:14px;
 }
 
-/* INPUTS */
 .input {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: none;
-  margin-bottom: 10px;
-  font-size: 14px;
-  box-shadow: var(--shadow);
+  width:100%;
+  padding:10px 12px;
+  border-radius:12px;
+  border:none;
+  margin-bottom:10px;
+  font-size:14px;
+  box-shadow:var(--shadow);
 }
 
-.input.primary {
-  font-size: 15px;
+.primary {
+  font-size:15px;
 }
 
-/* FILTER ROW */
 .filters {
-  display: flex;
-  gap: 8px;
+  display:flex;
+  gap:8px;
+}
+
+/* DROPDOWN */
+.dropdown {
+  position:relative;
+  width:100%;
+}
+
+.dropdown-menu {
+  position:absolute;
+  top:100%;
+  left:0;
+  right:0;
+  background:white;
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  max-height:220px;
+  overflow-y:auto;
+  display:none;
+  z-index:10;
+}
+
+.dropdown-item {
+  padding:10px;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.dropdown-item:hover {
+  background:#f1f1f1;
 }
 
 /* CARDS */
-.cards {
-  margin-top: 12px;
-}
+.cards { margin-top:12px; }
 
 .card {
-  background: var(--card);
-  border-radius: 14px;
-  padding: 12px;
-  margin-bottom: 10px;
-  box-shadow: var(--shadow);
+  background:white;
+  border-radius:14px;
+  padding:12px;
+  margin-bottom:10px;
+  box-shadow:var(--shadow);
 }
 
-.card .name {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.card .meta {
-  font-size: 12px;
-  color: #555;
-  margin-top: 2px;
-}
-
-.card .contact {
-  margin-top: 6px;
-  font-size: 13px;
-}
-
-.card a {
-  color: var(--blue);
-  text-decoration: none;
-}
+.card .name { font-weight:600; }
+.card .meta { font-size:12px; color:#555; }
+.card a { color:var(--blue); text-decoration:none; }

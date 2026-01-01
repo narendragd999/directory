@@ -1,68 +1,76 @@
 const SHEET_URL =
-  "https://opensheet.elk.sh/1mm90Evf_AzQyr_vBcvhd9TstJffPVqeukQU1SdgS2fk/Sheet1";
+ "https://opensheet.elk.sh/1mm90Evf_AzQyr_vBcvhd9TstJffPVqeukQU1SdgS2fk/Sheet1";
 
 const cards = document.getElementById("cards");
 const searchBox = document.getElementById("searchBox");
-const deptFilter = document.getElementById("deptFilter");
-const desigFilter = document.getElementById("desigFilter");
-const deptList = document.getElementById("deptList");
-const desigList = document.getElementById("desigList");
+
+const deptInput = document.getElementById("deptInput");
+const deptDropdown = document.getElementById("deptDropdown");
+
+const desigInput = document.getElementById("desigInput");
+const desigDropdown = document.getElementById("desigDropdown");
 
 let allData = [];
 let visibleData = [];
+let departments = [];
+let designations = [];
 
 /* FETCH DATA */
 fetch(SHEET_URL)
-  .then(res => res.json())
-  .then(raw => {
+.then(r=>r.json())
+.then(raw=>{
+  allData = raw
+    .filter(r=>r["Officer Name"] && r["Contact No."])
+    .map(r=>({
+      name:r["Officer Name"].trim(),
+      designation:(r["Designation"]||"").trim(),
+      department:(r["Office / Department"]||"").trim(),
+      district:(r["Place / District"]||"").trim(),
+      mobile:r["Contact No."].toString().trim(),
+      email:(r["E-Mail ID"]||"").trim()
+    }));
 
-    allData = raw
-      .filter(r => r["Officer Name"] && r["Contact No."])
-      .map(r => ({
-        name: r["Officer Name"].trim(),
-        designation: (r["Designation"] || "").trim(),
-        department: (r["Office / Department"] || "").trim(),
-        district: (r["Place / District"] || "").trim(),
-        mobile: r["Contact No."].toString().trim(),
-        email: (r["E-Mail ID"] || "").trim()
-      }));
+  departments=[...new Set(allData.map(x=>x.department).filter(Boolean))].sort();
+  designations=[...new Set(allData.map(x=>x.designation).filter(Boolean))].sort();
 
-    visibleData = allData;
-    populateLists();
-    render();
+  buildDropdown(deptDropdown, departments, deptInput);
+  buildDropdown(desigDropdown, designations, desigInput);
+
+  visibleData = allData;
+  render();
+});
+
+/* BUILD DROPDOWN */
+function buildDropdown(menu, values, input) {
+  menu.innerHTML="";
+  values.forEach(v=>{
+    const div=document.createElement("div");
+    div.className="dropdown-item";
+    div.textContent=v;
+    div.onclick=()=>{
+      input.value=v;
+      menu.style.display="none";
+      applyFilters();
+    };
+    menu.appendChild(div);
   });
 
-/* POPULATE SEARCHABLE LISTS */
-function populateLists() {
-  fillList(deptList, "department");
-  fillList(desigList, "designation");
-}
-
-function fillList(list, key) {
-  [...new Set(allData.map(x => x[key]).filter(Boolean))]
-    .sort()
-    .forEach(v => {
-      const o = document.createElement("option");
-      o.value = v;
-      list.appendChild(o);
-    });
+  input.onclick=()=> menu.style.display="block";
 }
 
 /* GLOBAL SEARCH */
-searchBox.addEventListener("input", applyFilters);
-deptFilter.addEventListener("input", applyFilters);
-desigFilter.addEventListener("input", applyFilters);
+searchBox.oninput = applyFilters;
 
-/* APPLY ALL FILTERS TOGETHER */
+/* APPLY FILTERS */
 function applyFilters() {
   const q = searchBox.value.toLowerCase();
-  const d = deptFilter.value.toLowerCase();
-  const g = desigFilter.value.toLowerCase();
+  const d = deptInput.value;
+  const g = desigInput.value;
 
   visibleData = allData.filter(x =>
     (!q || x.name.toLowerCase().includes(q) || x.mobile.includes(q)) &&
-    (!d || x.department.toLowerCase().includes(d)) &&
-    (!g || x.designation.toLowerCase().includes(g))
+    (!d || x.department === d) &&
+    (!g || x.designation === g)
   );
 
   render();
@@ -70,16 +78,22 @@ function applyFilters() {
 
 /* RENDER */
 function render() {
-  cards.innerHTML = visibleData.slice(0, 50).map(u => `
+  cards.innerHTML = visibleData.slice(0,50).map(u=>`
     <div class="card">
       <div class="name">${u.name}</div>
       <div class="meta">${u.designation}</div>
       <div class="meta">${u.department}</div>
       <div class="meta">${u.district}</div>
-      <div class="contact">
-        📞 <a href="tel:${u.mobile}">${u.mobile}</a><br>
-        📧 ${u.email}
-      </div>
+      📞 <a href="tel:${u.mobile}">${u.mobile}</a><br>
+      📧 ${u.email}
     </div>
   `).join("");
 }
+
+/* CLOSE DROPDOWN ON OUTSIDE CLICK */
+document.addEventListener("click",e=>{
+  if(!e.target.closest(".dropdown")){
+    deptDropdown.style.display="none";
+    desigDropdown.style.display="none";
+  }
+});

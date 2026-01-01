@@ -12,38 +12,33 @@
 <body>
 
 <div class="app">
-
   <h1>User Directory</h1>
 
-  <!-- 🔍 GLOBAL SEARCH -->
-  <input
-    id="searchBox"
-    class="input primary"
-    type="text"
-    placeholder="Search name or mobile">
+  <!-- GLOBAL SEARCH -->
+  <input id="searchBox" class="input primary"
+         placeholder="Search name or mobile">
 
-  <!-- 🔍 FILTERS -->
+  <!-- FILTERS -->
   <div class="filters">
-    <input
-      id="deptFilter"
-      class="input"
-      list="deptList"
-      placeholder="Search Department">
 
-    <input
-      id="desigFilter"
-      class="input"
-      list="desigList"
-      placeholder="Search Designation">
+    <!-- Department Dropdown -->
+    <div class="dropdown">
+      <input id="deptInput" class="input"
+             placeholder="Select Department" readonly>
+      <div id="deptDropdown" class="dropdown-menu"></div>
+    </div>
+
+    <!-- Designation Dropdown -->
+    <div class="dropdown">
+      <input id="desigInput" class="input"
+             placeholder="Select Designation" readonly>
+      <div id="desigDropdown" class="dropdown-menu"></div>
+    </div>
+
   </div>
 
-  <!-- datalists -->
-  <datalist id="deptList"></datalist>
-  <datalist id="desigList"></datalist>
-
-  <!-- RESULTS -->
+  <!-- CARDS -->
   <div id="cards" class="cards"></div>
-
 </div>
 
 </body>
