@@ -35,6 +35,11 @@ let departments = [];
 let designations = [];
 let districts = [];
 
+// stores ONLY selected valid values
+let selectedDept = "";
+let selectedDesig = "";
+let selectedDistrict = "";
+
 /* ===============================
    FETCH DATA
 ================================ */
@@ -52,42 +57,48 @@ fetch(SHEET_URL)
         email: (r["E-Mail ID"] || "").trim()
       }));
 
-    departments = uniqueValues("department");
-    designations = uniqueValues("designation");
-    districts = uniqueValues("district");
+    departments = unique("department");
+    designations = unique("designation");
+    districts = unique("district");
 
-    buildSearchableDropdown(deptDropdown, deptInput, departments);
-    buildSearchableDropdown(desigDropdown, desigInput, designations);
-    buildSearchableDropdown(districtDropdown, districtInput, districts);
+    setupDropdown(deptInput, deptDropdown, departments, val => {
+      selectedDept = val;
+    });
+
+    setupDropdown(desigInput, desigDropdown, designations, val => {
+      selectedDesig = val;
+    });
+
+    setupDropdown(districtInput, districtDropdown, districts, val => {
+      selectedDistrict = val;
+    });
 
     applyFilters();
-  })
-  .catch(err => {
-    console.error("DATA LOAD ERROR:", err);
-    cards.innerHTML = "<p style='color:red'>Failed to load data</p>";
   });
 
 /* ===============================
    HELPERS
 ================================ */
-function uniqueValues(key) {
+function unique(key) {
   return [...new Set(allData.map(x => x[key]).filter(Boolean))].sort();
 }
 
 /* ===============================
-   SEARCHABLE DROPDOWN
+   TRUE SEARCHABLE DROPDOWN
 ================================ */
-function buildSearchableDropdown(menu, input, values) {
+function setupDropdown(input, menu, values, onSelect) {
 
-  function renderList(list) {
+  function render(list) {
     menu.innerHTML = "";
     list.forEach(v => {
       const item = document.createElement("div");
       item.className = "dropdown-item";
       item.textContent = v;
 
-      item.onclick = () => {
+      item.onclick = e => {
+        e.stopPropagation(); // 🔑 IMPORTANT
         input.value = v;
+        onSelect(v);
         menu.style.display = "none";
         page = 1;
         applyFilters();
@@ -97,23 +108,21 @@ function buildSearchableDropdown(menu, input, values) {
     });
   }
 
-  // initial render
-  renderList(values);
+  // initial
+  render(values);
 
-  // show dropdown on focus
   input.addEventListener("focus", () => {
-    renderList(values);
+    render(values);
     menu.style.display = "block";
   });
 
-  // filter dropdown as user types
   input.addEventListener("input", () => {
     const q = input.value.toLowerCase();
-    const filtered = values.filter(v =>
-      v.toLowerCase().includes(q)
-    );
-    renderList(filtered);
+    render(values.filter(v => v.toLowerCase().includes(q)));
     menu.style.display = "block";
+
+    // invalidate selection if user types manually
+    onSelect("");
   });
 }
 
@@ -127,18 +136,12 @@ searchBox.addEventListener("input", () => {
 
 function applyFilters() {
   const q = searchBox.value.toLowerCase();
-  const dept = deptInput.value;
-  const desig = desigInput.value;
-  const dist = districtInput.value;
 
   filteredData = allData.filter(x =>
-    (!q ||
-      x.name.toLowerCase().includes(q) ||
-      x.mobile.includes(q)
-    ) &&
-    (!dept || x.department === dept) &&
-    (!desig || x.designation === desig) &&
-    (!dist || x.district === dist)
+    (!q || x.name.toLowerCase().includes(q) || x.mobile.includes(q)) &&
+    (!selectedDept || x.department === selectedDept) &&
+    (!selectedDesig || x.designation === selectedDesig) &&
+    (!selectedDistrict || x.district === selectedDistrict)
   );
 
   render();
@@ -147,19 +150,19 @@ function applyFilters() {
 /* ===============================
    PAGINATION
 ================================ */
-prevBtn.addEventListener("click", () => {
+prevBtn.onclick = () => {
   if (page > 1) {
     page--;
     render();
   }
-});
+};
 
-nextBtn.addEventListener("click", () => {
+nextBtn.onclick = () => {
   if (page * PAGE_SIZE < filteredData.length) {
     page++;
     render();
   }
-});
+};
 
 /* ===============================
    RENDER
@@ -186,12 +189,10 @@ function render() {
 }
 
 /* ===============================
-   CLOSE DROPDOWNS ON OUTSIDE CLICK
+   CLOSE DROPDOWNS
 ================================ */
-document.addEventListener("click", e => {
-  if (!e.target.closest(".dropdown")) {
-    deptDropdown.style.display = "none";
-    desigDropdown.style.display = "none";
-    districtDropdown.style.display = "none";
-  }
+document.addEventListener("click", () => {
+  deptDropdown.style.display = "none";
+  desigDropdown.style.display = "none";
+  districtDropdown.style.display = "none";
 });
