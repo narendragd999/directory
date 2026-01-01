@@ -1,7 +1,7 @@
 /* ===============================
    CONFIG
 ================================ */
-const APP_PASSWORD = "admin@123"; // 🔐 change this
+const APP_PASSWORD = "1254"; // 🔐 change this
 const SHEET_URL =
   "https://opensheet.elk.sh/1mm90Evf_AzQyr_vBcvhd9TstJffPVqeukQU1SdgS2fk/Sheet1";
 const PAGE_SIZE = 20;
