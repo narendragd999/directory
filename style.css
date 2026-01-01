@@ -41,7 +41,7 @@ h1 {
   gap:8px;
 }
 
-/* DROPDOWNS */
+/* Dropdown */
 .dropdown { position:relative; }
 
 .dropdown-menu {
@@ -65,7 +65,7 @@ h1 {
 }
 .dropdown-item:hover { background:#f2f2f2; }
 
-/* CARDS */
+/* Cards */
 .cards { margin-top:12px; }
 
 .card {
@@ -80,7 +80,7 @@ h1 {
 .card .meta { font-size:12px; color:#555; }
 .card a { color:var(--blue); text-decoration:none; }
 
-/* PAGINATION */
+/* Pagination */
 .pagination {
   display:flex;
   justify-content:space-between;
