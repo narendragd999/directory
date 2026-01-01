@@ -6,47 +6,29 @@
 <title>User Directory</title>
 
 <link rel="stylesheet" href="style.css">
-<link rel="manifest" href="manifest.json">
-
-<script defer src="passwords.js"></script>
 <script defer src="script.js"></script>
-
-<meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 
 <body>
 
-<!-- 🔒 LOGIN SCREEN -->
-<div id="loginScreen" class="screen">
-  <h2>District Login</h2>
-  <select id="loginDistrict"></select>
-  <input id="loginPass" type="password" placeholder="Password">
-  <button onclick="login()">Login</button>
-</div>
-
-<!-- 📱 MAIN APP -->
-<div id="app" class="screen hidden">
-
-  <header>User Directory</header>
+<div class="app">
+  <h2>User Directory</h2>
 
   <!-- SEARCH -->
-  <input id="searchBox" placeholder="Search name or mobile">
+  <input id="searchBox" type="text" placeholder="Search name or mobile">
 
   <!-- FILTERS -->
   <div class="filters">
-    <select id="deptFilter"><option value="">Department</option></select>
-    <select id="desigFilter"><option value="">Designation</option></select>
+    <select id="deptFilter">
+      <option value="">Department</option>
+    </select>
+    <select id="desigFilter">
+      <option value="">Designation</option>
+    </select>
   </div>
 
+  <!-- RESULTS -->
   <div id="cards"></div>
-
-  <!-- BOTTOM TABS -->
-  <nav class="tabs">
-    <button onclick="switchTab('home')">🏠</button>
-    <button onclick="switchTab('offline')">📴</button>
-    <button onclick="logout()">🔒</button>
-  </nav>
-
 </div>
 
 </body>

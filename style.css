@@ -1,65 +1,56 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(180deg,#6a11cb,#fff);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(180deg, #6a11cb, #ffffff);
 }
 
-.screen {
+.app {
   max-width: 430px;
   margin: auto;
   padding: 12px;
 }
 
-.hidden { display:none }
-
-header {
+h2 {
   text-align: center;
   color: white;
-  font-size: 18px;
+  margin-bottom: 10px;
 }
 
-input, select, button {
+input, select {
   width: 100%;
   padding: 8px;
-  margin: 6px 0;
+  margin-bottom: 8px;
   border-radius: 10px;
   border: none;
-}
-
-button {
-  background:#3498db;
-  color:white;
+  font-size: 14px;
 }
 
 .filters {
-  display:flex;
-  gap:6px;
+  display: flex;
+  gap: 6px;
 }
 
 #cards {
-  margin-bottom: 60px;
+  margin-top: 10px;
 }
 
 .card {
-  background:white;
-  padding:10px;
-  border-radius:10px;
-  margin-bottom:6px;
-  box-shadow:0 2px 6px rgba(0,0,0,.1);
-}
-
-.tabs {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  max-width: 430px;
-  display: flex;
   background: white;
+  padding: 10px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
 }
 
-.tabs button {
-  flex:1;
-  background:none;
-  color:#333;
-  font-size:18px;
+.card b {
+  font-size: 15px;
+}
+
+.card small {
+  color: #555;
+}
+
+.card a {
+  color: #3498db;
+  text-decoration: none;
 }

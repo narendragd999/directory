@@ -1,124 +1,92 @@
-const SHEET_URL = "https://opensheet.elk.sh/1mm90Evf_AzQyr_vBcvhd9TstJffPVqeukQU1SdgS2fk/Sheet1";
-
-let allData = [];
-let districtData = [];
-let visibleList = [];
+const SHEET_URL =
+  "https://opensheet.elk.sh/1mm90Evf_AzQyr_vBcvhd9TstJffPVqeukQU1SdgS2fk/Sheet1";
 
 const cards = document.getElementById("cards");
+const searchBox = document.getElementById("searchBox");
+const deptFilter = document.getElementById("deptFilter");
+const desigFilter = document.getElementById("desigFilter");
 
-/* 🔒 LOGIN */
-function login() {
-  const d = loginDistrict.value;
-  const p = loginPass.value;
-  if (DISTRICT_PASSWORDS[d] === p) {
-    localStorage.setItem("district", d);
-    initApp(d);
-  } else alert("Wrong password");
+let allData = [];
+let visibleData = [];
+
+/* FETCH DATA */
+fetch(SHEET_URL)
+  .then(res => res.json())
+  .then(raw => {
+    console.log("RAW:", raw);
+
+    // 🔴 CLEAN DATA (VERY IMPORTANT)
+    allData = raw
+      .filter(r => r["Officer Name"] && r["Contact No."])
+      .map(r => ({
+        name: r["Officer Name"].trim(),
+        designation: (r["Designation"] || "").trim(),
+        department: (r["Office / Department"] || "").trim(),
+        district: (r["Place / District"] || "").trim(),
+        mobile: r["Contact No."].toString().trim(),
+        email: (r["E-Mail ID"] || "").trim()
+      }));
+
+    visibleData = allData;
+    fillFilters();
+    render();
+  })
+  .catch(err => {
+    console.error(err);
+    cards.innerHTML = "<p style='color:red'>Failed to load data</p>";
+  });
+
+/* FILL FILTERS */
+function fillFilters() {
+  fillSelect(deptFilter, "department");
+  fillSelect(desigFilter, "designation");
 }
 
-function logout() {
-  localStorage.clear();
-  location.reload();
-}
-
-/* INIT */
-function initApp(district) {
-  loginScreen.classList.add("hidden");
-  app.classList.remove("hidden");
-  fetchData(district);
-}
-
-/* FETCH + NORMALIZE */
-async function fetchData(district) {
-  let raw;
-  if (localStorage.cachedData) {
-    raw = JSON.parse(localStorage.cachedData);
-  } else {
-    raw = await fetch(SHEET_URL).then(r => r.json());
-    localStorage.cachedData = JSON.stringify(raw);
-  }
-
-  // 🔧 CLEAN & NORMALIZE
-  allData = raw
-    .filter(r => r["Officer Name"])
-    .map(r => ({
-      sno: r["S.No."],
-      name: r["Officer Name"],
-      designation: r["Designation"],
-      department: r["Office / Department"],
-      district: r["Place / District"],
-      mobile: cleanMobile(r["Contact No."]),
-      email: r["E-Mail ID"]
-    }));
-
-  districtData = allData.filter(x => x.district === district);
-  visibleList = districtData;
-
-  populateFilters();
-  render();
-}
-
-/* MOBILE CLEAN */
-function cleanMobile(v) {
-  if (!v) return "";
-  return v.toString().replace(/\s+/g, "");
-}
-
-/* FILTERS */
-function populateFilters() {
-  fill("deptFilter", "department");
-  fill("desigFilter", "designation");
-}
-
-function fill(id, key) {
-  const s = document.getElementById(id);
-  s.innerHTML = `<option value="">${id === "deptFilter" ? "Department" : "Designation"}</option>`;
-  [...new Set(districtData.map(x => x[key]).filter(Boolean))]
-    .forEach(v => s.innerHTML += `<option>${v}</option>`);
+function fillSelect(select, key) {
+  const values = [...new Set(allData.map(x => x[key]).filter(Boolean))];
+  values.sort().forEach(v => {
+    const o = document.createElement("option");
+    o.value = v;
+    o.textContent = v;
+    select.appendChild(o);
+  });
 }
 
 /* LIVE SEARCH */
-searchBox.oninput = () => {
+searchBox.addEventListener("input", () => {
   const q = searchBox.value.toLowerCase();
-  visibleList = districtData.filter(x =>
+  visibleData = allData.filter(x =>
     x.name.toLowerCase().includes(q) ||
     x.mobile.includes(q)
   );
   render();
-};
+});
 
 /* FILTER CHANGE */
-document.querySelectorAll("select").forEach(s => s.onchange = applyFilter);
+deptFilter.addEventListener("change", applyFilter);
+desigFilter.addEventListener("change", applyFilter);
 
 function applyFilter() {
   const d = deptFilter.value;
   const g = desigFilter.value;
 
-  visibleList = districtData.filter(x =>
+  visibleData = allData.filter(x =>
     (!d || x.department === d) &&
     (!g || x.designation === g)
   );
   render();
 }
 
-/* RENDER */
+/* RENDER CARDS */
 function render() {
-  cards.innerHTML = visibleList.slice(0, 50).map(u => `
+  cards.innerHTML = visibleData.slice(0, 50).map(u => `
     <div class="card">
       <b>${u.name}</b><br>
-      ${u.designation}<br>
-      ${u.department}<br>
-      ${u.district}<br>
+      <small>${u.designation}</small><br>
+      <small>${u.department}</small><br>
+      <small>${u.district}</small><br>
       📞 <a href="tel:${u.mobile}">${u.mobile}</a><br>
-      📧 ${u.email || ""}
+      📧 <small>${u.email}</small>
     </div>
   `).join("");
-}
-
-/* AUTO LOGIN */
-if (localStorage.district) {
-  initApp(localStorage.district);
-} else {
-  Object.keys(DISTRICT_PASSWORDS)
-    .forEach(d => loginDistrict.innerHTML += `<option>${d}</option>`);
 }
