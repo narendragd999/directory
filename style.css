@@ -33,33 +33,29 @@ h1 {
   box-shadow:var(--shadow);
 }
 
-.primary {
-  font-size:15px;
-}
+.primary { font-size:15px; }
 
 .filters {
-  display:flex;
+  display:grid;
+  grid-template-columns:1fr 1fr;
   gap:8px;
 }
 
-/* DROPDOWN */
-.dropdown {
-  position:relative;
-  width:100%;
-}
+/* DROPDOWNS */
+.dropdown { position:relative; }
 
 .dropdown-menu {
   position:absolute;
   top:100%;
   left:0;
   right:0;
-  background:white;
+  background:#fff;
   border-radius:12px;
   box-shadow:var(--shadow);
   max-height:220px;
   overflow-y:auto;
   display:none;
-  z-index:10;
+  z-index:20;
 }
 
 .dropdown-item {
@@ -67,10 +63,7 @@ h1 {
   font-size:13px;
   cursor:pointer;
 }
-
-.dropdown-item:hover {
-  background:#f1f1f1;
-}
+.dropdown-item:hover { background:#f2f2f2; }
 
 /* CARDS */
 .cards { margin-top:12px; }
@@ -86,3 +79,19 @@ h1 {
 .card .name { font-weight:600; }
 .card .meta { font-size:12px; color:#555; }
 .card a { color:var(--blue); text-decoration:none; }
+
+/* PAGINATION */
+.pagination {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:14px 0;
+}
+
+.pagination button {
+  background:var(--blue);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  padding:6px 12px;
+}

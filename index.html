@@ -21,24 +21,33 @@
   <!-- FILTERS -->
   <div class="filters">
 
-    <!-- Department Dropdown -->
     <div class="dropdown">
-      <input id="deptInput" class="input"
-             placeholder="Select Department" readonly>
+      <input id="deptInput" class="input" placeholder="Department" readonly>
       <div id="deptDropdown" class="dropdown-menu"></div>
     </div>
 
-    <!-- Designation Dropdown -->
     <div class="dropdown">
-      <input id="desigInput" class="input"
-             placeholder="Select Designation" readonly>
+      <input id="desigInput" class="input" placeholder="Designation" readonly>
       <div id="desigDropdown" class="dropdown-menu"></div>
+    </div>
+
+    <div class="dropdown">
+      <input id="districtInput" class="input" placeholder="District" readonly>
+      <div id="districtDropdown" class="dropdown-menu"></div>
     </div>
 
   </div>
 
-  <!-- CARDS -->
+  <!-- RESULTS -->
   <div id="cards" class="cards"></div>
+
+  <!-- PAGINATION -->
+  <div class="pagination">
+    <button id="prevBtn">◀ Prev</button>
+    <span id="pageInfo"></span>
+    <button id="nextBtn">Next ▶</button>
+  </div>
+
 </div>
 
 </body>
