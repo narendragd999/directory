@@ -1,0 +1,8 @@
+{
+  "name": "User Directory",
+  "short_name": "Directory",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#6a11cb",
+  "theme_color": "#6a11cb"
+}

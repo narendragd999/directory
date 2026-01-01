@@ -1,0 +1,65 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(180deg,#6a11cb,#fff);
+}
+
+.screen {
+  max-width: 430px;
+  margin: auto;
+  padding: 12px;
+}
+
+.hidden { display:none }
+
+header {
+  text-align: center;
+  color: white;
+  font-size: 18px;
+}
+
+input, select, button {
+  width: 100%;
+  padding: 8px;
+  margin: 6px 0;
+  border-radius: 10px;
+  border: none;
+}
+
+button {
+  background:#3498db;
+  color:white;
+}
+
+.filters {
+  display:flex;
+  gap:6px;
+}
+
+#cards {
+  margin-bottom: 60px;
+}
+
+.card {
+  background:white;
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:6px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+
+.tabs {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  max-width: 430px;
+  display: flex;
+  background: white;
+}
+
+.tabs button {
+  flex:1;
+  background:none;
+  color:#333;
+  font-size:18px;
+}
