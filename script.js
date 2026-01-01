@@ -1,10 +1,34 @@
 /* ===============================
    CONFIG
 ================================ */
+const APP_PASSWORD = "admin@123";   // 🔐 change this
 const SHEET_URL =
   "https://opensheet.elk.sh/1mm90Evf_AzQyr_vBcvhd9TstJffPVqeukQU1SdgS2fk/Sheet1";
-
 const PAGE_SIZE = 20;
+
+/* ===============================
+   PASSWORD GATE
+================================ */
+const loginScreen = document.getElementById("loginScreen");
+const app = document.getElementById("app");
+const loginBtn = document.getElementById("loginBtn");
+const appPassword = document.getElementById("appPassword");
+const loginError = document.getElementById("loginError");
+
+if (sessionStorage.getItem("APP_UNLOCKED") === "YES") {
+  loginScreen.style.display = "none";
+  app.style.display = "block";
+}
+
+loginBtn.onclick = () => {
+  if (appPassword.value === APP_PASSWORD) {
+    sessionStorage.setItem("APP_UNLOCKED", "YES");
+    loginScreen.style.display = "none";
+    app.style.display = "block";
+  } else {
+    loginError.textContent = "Wrong password";
+  }
+};
 
 /* ===============================
    ELEMENTS
@@ -31,11 +55,6 @@ let allData = [];
 let filteredData = [];
 let page = 1;
 
-let departments = [];
-let designations = [];
-let districts = [];
-
-// stores ONLY selected valid values
 let selectedDept = "";
 let selectedDesig = "";
 let selectedDistrict = "";
@@ -44,37 +63,25 @@ let selectedDistrict = "";
    FETCH DATA
 ================================ */
 fetch(SHEET_URL)
-  .then(res => res.json())
-  .then(raw => {
-    allData = raw
-      .filter(r => r["Officer Name"] && r["Contact No."])
-      .map(r => ({
-        name: r["Officer Name"].trim(),
-        designation: (r["Designation"] || "").trim(),
-        department: (r["Office / Department"] || "").trim(),
-        district: (r["Place / District"] || "").trim(),
-        mobile: r["Contact No."].toString().trim(),
-        email: (r["E-Mail ID"] || "").trim()
-      }));
+.then(r => r.json())
+.then(raw => {
+  allData = raw
+    .filter(r => r["Officer Name"] && r["Contact No."])
+    .map(r => ({
+      name: r["Officer Name"].trim(),
+      designation: (r["Designation"] || "").trim(),
+      department: (r["Office / Department"] || "").trim(),
+      district: (r["Place / District"] || "").trim(),
+      mobile: r["Contact No."].toString().trim(),
+      email: (r["E-Mail ID"] || "").trim()
+    }));
 
-    departments = unique("department");
-    designations = unique("designation");
-    districts = unique("district");
+  setupDropdown(deptInput, deptDropdown, unique("department"), v => selectedDept = v);
+  setupDropdown(desigInput, desigDropdown, unique("designation"), v => selectedDesig = v);
+  setupDropdown(districtInput, districtDropdown, unique("district"), v => selectedDistrict = v);
 
-    setupDropdown(deptInput, deptDropdown, departments, val => {
-      selectedDept = val;
-    });
-
-    setupDropdown(desigInput, desigDropdown, designations, val => {
-      selectedDesig = val;
-    });
-
-    setupDropdown(districtInput, districtDropdown, districts, val => {
-      selectedDistrict = val;
-    });
-
-    applyFilters();
-  });
+  applyFilters();
+});
 
 /* ===============================
    HELPERS
@@ -84,7 +91,7 @@ function unique(key) {
 }
 
 /* ===============================
-   TRUE SEARCHABLE DROPDOWN
+   SEARCHABLE DROPDOWN
 ================================ */
 function setupDropdown(input, menu, values, onSelect) {
 
@@ -94,45 +101,37 @@ function setupDropdown(input, menu, values, onSelect) {
       const item = document.createElement("div");
       item.className = "dropdown-item";
       item.textContent = v;
-
       item.onclick = e => {
-        e.stopPropagation(); // 🔑 IMPORTANT
+        e.stopPropagation();
         input.value = v;
         onSelect(v);
         menu.style.display = "none";
         page = 1;
         applyFilters();
       };
-
       menu.appendChild(item);
     });
   }
 
-  // initial
   render(values);
 
-  input.addEventListener("focus", () => {
+  input.onfocus = () => {
     render(values);
     menu.style.display = "block";
-  });
+  };
 
-  input.addEventListener("input", () => {
+  input.oninput = () => {
     const q = input.value.toLowerCase();
     render(values.filter(v => v.toLowerCase().includes(q)));
     menu.style.display = "block";
-
-    // invalidate selection if user types manually
     onSelect("");
-  });
+  };
 }
 
 /* ===============================
    FILTER LOGIC
 ================================ */
-searchBox.addEventListener("input", () => {
-  page = 1;
-  applyFilters();
-});
+searchBox.oninput = () => { page = 1; applyFilters(); };
 
 function applyFilters() {
   const q = searchBox.value.toLowerCase();
@@ -150,19 +149,8 @@ function applyFilters() {
 /* ===============================
    PAGINATION
 ================================ */
-prevBtn.onclick = () => {
-  if (page > 1) {
-    page--;
-    render();
-  }
-};
-
-nextBtn.onclick = () => {
-  if (page * PAGE_SIZE < filteredData.length) {
-    page++;
-    render();
-  }
-};
+prevBtn.onclick = () => { if (page > 1) { page--; render(); } };
+nextBtn.onclick = () => { if (page * PAGE_SIZE < filteredData.length) { page++; render(); } };
 
 /* ===============================
    RENDER
