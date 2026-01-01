@@ -1,56 +1,80 @@
+:root {
+  --purple: #6a11cb;
+  --blue: #3498db;
+  --card: #ffffff;
+  --shadow: 0 6px 16px rgba(0,0,0,.12);
+}
+
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   background: linear-gradient(180deg, #6a11cb, #ffffff);
 }
 
 .app {
   max-width: 430px;
   margin: auto;
-  padding: 12px;
+  padding: 14px;
 }
 
-h2 {
+h1 {
   text-align: center;
-  color: white;
-  margin-bottom: 10px;
+  color: #fff;
+  font-size: 20px;
+  margin-bottom: 14px;
 }
 
-input, select {
+/* INPUTS */
+.input {
   width: 100%;
-  padding: 8px;
-  margin-bottom: 8px;
-  border-radius: 10px;
-  border: none;
-  font-size: 14px;
-}
-
-.filters {
-  display: flex;
-  gap: 6px;
-}
-
-#cards {
-  margin-top: 10px;
-}
-
-.card {
-  background: white;
-  padding: 10px;
+  padding: 10px 12px;
   border-radius: 12px;
-  margin-bottom: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  border: none;
+  margin-bottom: 10px;
+  font-size: 14px;
+  box-shadow: var(--shadow);
 }
 
-.card b {
+.input.primary {
   font-size: 15px;
 }
 
-.card small {
+/* FILTER ROW */
+.filters {
+  display: flex;
+  gap: 8px;
+}
+
+/* CARDS */
+.cards {
+  margin-top: 12px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+}
+
+.card .name {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.card .meta {
+  font-size: 12px;
   color: #555;
+  margin-top: 2px;
+}
+
+.card .contact {
+  margin-top: 6px;
+  font-size: 13px;
 }
 
 .card a {
-  color: #3498db;
+  color: var(--blue);
   text-decoration: none;
 }

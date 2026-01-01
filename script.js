@@ -5,6 +5,8 @@ const cards = document.getElementById("cards");
 const searchBox = document.getElementById("searchBox");
 const deptFilter = document.getElementById("deptFilter");
 const desigFilter = document.getElementById("desigFilter");
+const deptList = document.getElementById("deptList");
+const desigList = document.getElementById("desigList");
 
 let allData = [];
 let visibleData = [];
@@ -13,9 +15,7 @@ let visibleData = [];
 fetch(SHEET_URL)
   .then(res => res.json())
   .then(raw => {
-    console.log("RAW:", raw);
 
-    // 🔴 CLEAN DATA (VERY IMPORTANT)
     allData = raw
       .filter(r => r["Officer Name"] && r["Contact No."])
       .map(r => ({
@@ -28,65 +28,58 @@ fetch(SHEET_URL)
       }));
 
     visibleData = allData;
-    fillFilters();
+    populateLists();
     render();
-  })
-  .catch(err => {
-    console.error(err);
-    cards.innerHTML = "<p style='color:red'>Failed to load data</p>";
   });
 
-/* FILL FILTERS */
-function fillFilters() {
-  fillSelect(deptFilter, "department");
-  fillSelect(desigFilter, "designation");
+/* POPULATE SEARCHABLE LISTS */
+function populateLists() {
+  fillList(deptList, "department");
+  fillList(desigList, "designation");
 }
 
-function fillSelect(select, key) {
-  const values = [...new Set(allData.map(x => x[key]).filter(Boolean))];
-  values.sort().forEach(v => {
-    const o = document.createElement("option");
-    o.value = v;
-    o.textContent = v;
-    select.appendChild(o);
-  });
+function fillList(list, key) {
+  [...new Set(allData.map(x => x[key]).filter(Boolean))]
+    .sort()
+    .forEach(v => {
+      const o = document.createElement("option");
+      o.value = v;
+      list.appendChild(o);
+    });
 }
 
-/* LIVE SEARCH */
-searchBox.addEventListener("input", () => {
+/* GLOBAL SEARCH */
+searchBox.addEventListener("input", applyFilters);
+deptFilter.addEventListener("input", applyFilters);
+desigFilter.addEventListener("input", applyFilters);
+
+/* APPLY ALL FILTERS TOGETHER */
+function applyFilters() {
   const q = searchBox.value.toLowerCase();
-  visibleData = allData.filter(x =>
-    x.name.toLowerCase().includes(q) ||
-    x.mobile.includes(q)
-  );
-  render();
-});
-
-/* FILTER CHANGE */
-deptFilter.addEventListener("change", applyFilter);
-desigFilter.addEventListener("change", applyFilter);
-
-function applyFilter() {
-  const d = deptFilter.value;
-  const g = desigFilter.value;
+  const d = deptFilter.value.toLowerCase();
+  const g = desigFilter.value.toLowerCase();
 
   visibleData = allData.filter(x =>
-    (!d || x.department === d) &&
-    (!g || x.designation === g)
+    (!q || x.name.toLowerCase().includes(q) || x.mobile.includes(q)) &&
+    (!d || x.department.toLowerCase().includes(d)) &&
+    (!g || x.designation.toLowerCase().includes(g))
   );
+
   render();
 }
 
-/* RENDER CARDS */
+/* RENDER */
 function render() {
   cards.innerHTML = visibleData.slice(0, 50).map(u => `
     <div class="card">
-      <b>${u.name}</b><br>
-      <small>${u.designation}</small><br>
-      <small>${u.department}</small><br>
-      <small>${u.district}</small><br>
-      📞 <a href="tel:${u.mobile}">${u.mobile}</a><br>
-      📧 <small>${u.email}</small>
+      <div class="name">${u.name}</div>
+      <div class="meta">${u.designation}</div>
+      <div class="meta">${u.department}</div>
+      <div class="meta">${u.district}</div>
+      <div class="contact">
+        📞 <a href="tel:${u.mobile}">${u.mobile}</a><br>
+        📧 ${u.email}
+      </div>
     </div>
   `).join("");
 }
