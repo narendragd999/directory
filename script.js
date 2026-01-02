@@ -14,11 +14,13 @@ loginBtn.onclick = () => {
   if (appPassword.value === APP_PASSWORD) {
     loginScreen.style.display = "none";
     app.classList.remove("hidden");
+    showLoader();        // ✅ show loader ONLY now
     initApp();
   } else {
     loginError.textContent = "Wrong password";
   }
 };
+
 
 const loader = document.getElementById("loader");
 function showLoader() {
@@ -28,6 +30,7 @@ function hideLoader() {
   loader.style.display = "none";
 }
 
+setTimeout(() => hideLoader(), 15000);
 
 function initApp() {
   const cards = document.getElementById("cards");
@@ -76,6 +79,12 @@ function initApp() {
     );
 
     apply();
+    hideLoader(); // ✅ success
+  })
+  .catch(err => {
+    console.error("Data load failed", err);
+    hideLoader(); // ✅ failure
+    alert("Failed to load directory data. Please check internet.");
   });
 
   function unique(k){
