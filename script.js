@@ -53,9 +53,18 @@ function initApp() {
         email:r["E-Mail ID"]||""
       }));
 
-    setupDropdown(deptInput,deptDropdown,"Select Department",unique("department"),v=>selDept=v);
-    setupDropdown(desigInput,desigDropdown,"Select Designation",unique("designation"),v=>selDesig=v);
-    setupDropdown(districtInput,districtDropdown,"Select District / Block",unique("district"),v=>selDistrict=v);
+    searchableDropdown(
+      deptInput, deptDropdown, "Select Department",
+      unique("department"), v => selDept = v
+    );
+    searchableDropdown(
+      desigInput, desigDropdown, "Select Designation",
+      unique("designation"), v => selDesig = v
+    );
+    searchableDropdown(
+      districtInput, districtDropdown, "Select District / Block",
+      unique("district"), v => selDistrict = v
+    );
 
     apply();
   });
@@ -64,31 +73,45 @@ function initApp() {
     return [...new Set(allData.map(x=>x[k]).filter(Boolean))].sort();
   }
 
-  function setupDropdown(input,menu,defaultText,list,onSelect){
-    input.onclick=()=>render(list);
+  /* 🔍 SEARCHABLE DROPDOWN (RESTORED) */
+  function searchableDropdown(input, menu, placeholder, list, onSelect) {
 
-    function render(arr){
-      menu.innerHTML="";
-      addOption(defaultText,"");
-      arr.forEach(v=>addOption(v,v));
-      menu.style.display="block";
+    function render(filtered) {
+      menu.innerHTML = "";
+
+      addItem(placeholder, "");
+
+      filtered.forEach(v => addItem(v, v));
+
+      menu.style.display = "block";
     }
 
-    function addOption(text,val){
-      const d=document.createElement("div");
-      d.className="dropdown-item";
-      d.textContent=text;
-      d.onclick=()=>{
-        input.value=text;
-        onSelect(val);
-        menu.style.display="none";
-        page=1;
+    function addItem(text, value) {
+      const d = document.createElement("div");
+      d.className = "dropdown-item";
+      d.textContent = text;
+      d.onclick = () => {
+        input.value = text;
+        onSelect(value);
+        menu.style.display = "none";
+        page = 1;
         apply();
       };
       menu.appendChild(d);
     }
+
+    input.readOnly = false;
+
+    input.onfocus = () => render(list);
+
+    input.oninput = () => {
+      const q = input.value.toLowerCase();
+      render(list.filter(v => v.toLowerCase().includes(q)));
+      onSelect(""); // invalidate until selected
+    };
   }
 
+  /* RESET */
   resetBtn.onclick = () => {
     searchBox.value = "";
     deptInput.value = "Select Department";
@@ -99,25 +122,28 @@ function initApp() {
     apply();
   };
 
-  searchBox.oninput=()=>{page=1;apply();};
+  searchBox.oninput = () => { page = 1; apply(); };
 
   function apply(){
-    const q=searchBox.value.toLowerCase();
-    filteredData = allData.filter(x=>
-      (!q||x.name.toLowerCase().includes(q)||x.mobile.includes(q)) &&
-      (!selDept||x.department===selDept) &&
-      (!selDesig||x.designation===selDesig) &&
-      (!selDistrict||x.district===selDistrict)
+    const q = searchBox.value.toLowerCase();
+    filteredData = allData.filter(x =>
+      (!q || x.name.toLowerCase().includes(q) || x.mobile.includes(q)) &&
+      (!selDept || x.department === selDept) &&
+      (!selDesig || x.designation === selDesig) &&
+      (!selDistrict || x.district === selDistrict)
     );
     render();
   }
 
-  prevBtn.onclick=()=>{if(page>1){page--;render();}};
-  nextBtn.onclick=()=>{if(page*PAGE_SIZE<filteredData.length){page++;render();}};
+  prevBtn.onclick = () => { if(page>1){ page--; render(); } };
+  nextBtn.onclick = () => {
+    if(page * PAGE_SIZE < filteredData.length){ page++; render(); }
+  };
 
   function render(){
     const s=(page-1)*PAGE_SIZE;
     const e=s+PAGE_SIZE;
+
     cards.innerHTML = filteredData.slice(s,e).map(u=>`
       <div class="card">
         <div class="name">${u.name}</div>
@@ -127,7 +153,18 @@ function initApp() {
         📞 ${u.mobile}<br>📧 ${u.email}
       </div>
     `).join("");
+
     resultCount.textContent = `Total results: ${filteredData.length}`;
-    pageInfo.textContent = `Page ${page} / ${Math.ceil(filteredData.length/PAGE_SIZE)}`;
+    pageInfo.textContent =
+      `Page ${page} / ${Math.ceil(filteredData.length / PAGE_SIZE)}`;
   }
+
+  /* CLOSE DROPDOWNS ON OUTSIDE CLICK */
+  document.addEventListener("click", e => {
+    if (!e.target.closest(".dropdown")) {
+      deptDropdown.style.display = "none";
+      desigDropdown.style.display = "none";
+      districtDropdown.style.display = "none";
+    }
+  });
 }
