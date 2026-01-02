@@ -1,37 +1,53 @@
+/* =========================
+   CONFIG
+========================= */
 const APP_PASSWORD = "1254";
 const SHEET_URL =
   "https://opensheet.elk.sh/1mm90Evf_AzQyr_vBcvhd9TstJffPVqeukQU1SdgS2fk/Sheet1";
 const PAGE_SIZE = 20;
 
-/* LOGIN */
+/* =========================
+   GLOBAL ELEMENTS
+========================= */
 const loginScreen = document.getElementById("loginScreen");
 const app = document.getElementById("app");
 const loginBtn = document.getElementById("loginBtn");
 const appPassword = document.getElementById("appPassword");
 const loginError = document.getElementById("loginError");
 
+const loader = document.getElementById("loader");
+
+/* =========================
+   LOADER CONTROL
+========================= */
+function showLoader() {
+  if (loader) loader.style.display = "flex";
+}
+
+function hideLoader() {
+  if (loader) loader.style.display = "none";
+}
+
+/* Safety: auto-hide loader */
+setTimeout(hideLoader, 15000);
+
+/* =========================
+   LOGIN
+========================= */
 loginBtn.onclick = () => {
   if (appPassword.value === APP_PASSWORD) {
     loginScreen.style.display = "none";
     app.classList.remove("hidden");
-    showLoader();        // ✅ show loader ONLY now
+    showLoader();          // ✅ show loader only now
     initApp();
   } else {
     loginError.textContent = "Wrong password";
   }
 };
 
-
-const loader = document.getElementById("loader");
-function showLoader() {
-  loader.style.display = "flex";
-}
-function hideLoader() {
-  loader.style.display = "none";
-}
-
-setTimeout(() => hideLoader(), 15000);
-
+/* =========================
+   MAIN APP
+========================= */
 function initApp() {
   const cards = document.getElementById("cards");
   const resultCount = document.getElementById("resultCount");
@@ -50,63 +66,74 @@ function initApp() {
   const nextBtn = document.getElementById("nextBtn");
   const pageInfo = document.getElementById("pageInfo");
 
-  let allData = [], filteredData = [];
+  let allData = [];
+  let filteredData = [];
   let page = 1;
-  let selDept="", selDesig="", selDistrict="";
 
-  fetch(SHEET_URL).then(r=>r.json()).then(data=>{
-    allData = data.filter(r=>r["Officer Name"] && r["Contact No."])
-      .map(r=>({
-        name:r["Officer Name"],
-        designation:r["Designation"]||"",
-        department:r["Office / Department"]||"",
-        district:r["Place / District"]||"",
-        mobile:r["Contact No."],
-        email:r["E-Mail ID"]||""
-      }));
+  let selDept = "";
+  let selDesig = "";
+  let selDistrict = "";
 
-    searchableDropdown(
-      deptInput, deptDropdown, "Select Department",
-      unique("department"), v => selDept = v
-    );
-    searchableDropdown(
-      desigInput, desigDropdown, "Select Designation",
-      unique("designation"), v => selDesig = v
-    );
-    searchableDropdown(
-      districtInput, districtDropdown, "Select District / Block",
-      unique("district"), v => selDistrict = v
-    );
+  /* =========================
+     FETCH DATA
+  ========================= */
+  fetch(SHEET_URL)
+    .then(r => r.json())
+    .then(data => {
+      allData = data
+        .filter(r => r["Officer Name"] && r["Contact No."])
+        .map(r => ({
+          name: r["Officer Name"],
+          designation: r["Designation"] || "",
+          department: r["Office / Department"] || "",
+          district: r["Place / District"] || "",
+          mobile: r["Contact No."],
+          email: r["E-Mail ID"] || ""
+        }));
 
-    apply();
-    hideLoader(); // ✅ success
-  })
-  .catch(err => {
-    console.error("Data load failed", err);
-    hideLoader(); // ✅ failure
-    alert("Failed to load directory data. Please check internet.");
-  });
+      searchableDropdown(
+        deptInput, deptDropdown, "Select Department",
+        unique("department"), v => selDept = v
+      );
 
-  function unique(k){
-    return [...new Set(allData.map(x=>x[k]).filter(Boolean))].sort();
+      searchableDropdown(
+        desigInput, desigDropdown, "Select Designation",
+        unique("designation"), v => selDesig = v
+      );
+
+      searchableDropdown(
+        districtInput, districtDropdown, "Select District / Block",
+        unique("district"), v => selDistrict = v
+      );
+
+      applyFilters();
+      hideLoader();   // ✅ SUCCESS
+    })
+    .catch(err => {
+      console.error("Fetch failed:", err);
+      hideLoader();   // ✅ FAILURE SAFE
+      alert("Failed to load directory data. Please check internet.");
+    });
+
+  /* =========================
+     UTILITIES
+  ========================= */
+  function unique(key) {
+    return [...new Set(allData.map(x => x[key]).filter(Boolean))].sort();
   }
 
-  /* 🔍 SEARCHABLE DROPDOWN (RESTORED) */
+  /* =========================
+     SEARCHABLE DROPDOWN
+  ========================= */
   function searchableDropdown(input, menu, placeholder, list, onSelect) {
-
-    let selectedValue = "";
-
-    // set initial placeholder
     input.value = placeholder;
+    input.readOnly = false;
 
     function render(items) {
       menu.innerHTML = "";
-
-      // 🔹 Clear option
       addItem(placeholder, "");
 
       items.forEach(v => addItem(v, v));
-
       menu.style.display = "block";
     }
 
@@ -116,88 +143,103 @@ function initApp() {
       d.textContent = text;
 
       d.onclick = () => {
-        selectedValue = value;
         input.value = value || placeholder;
-        menu.style.display = "none";
         onSelect(value);
+        menu.style.display = "none";
         page = 1;
-        apply();
+        applyFilters();
       };
-
       menu.appendChild(d);
     }
 
-    // 🔍 Enable typing
-    input.readOnly = false;
+    input.onfocus = () => render(list);
 
-    // Focus → show full list
-    input.onfocus = () => {
-      input.select();
-      render(list);
-    };
-
-    // Typing → filter list (THIS WAS BROKEN BEFORE)
     input.oninput = () => {
       const q = input.value.toLowerCase();
-      selectedValue = "";        // invalidate selection while typing
-      onSelect("");              // no filter until user clicks option
-
-      render(list.filter(v =>
-        v.toLowerCase().includes(q)
-      ));
+      onSelect(""); // invalidate until selection
+      render(list.filter(v => v.toLowerCase().includes(q)));
     };
   }
 
+  /* =========================
+     FILTER + SEARCH
+  ========================= */
+  searchBox.oninput = () => {
+    page = 1;
+    applyFilters();
+  };
 
-  /* RESET */
   resetBtn.onclick = () => {
     searchBox.value = "";
     deptInput.value = "Select Department";
     desigInput.value = "Select Designation";
     districtInput.value = "Select District / Block";
+
     selDept = selDesig = selDistrict = "";
     page = 1;
-    apply();
+    applyFilters();
   };
 
-  searchBox.oninput = () => { page = 1; apply(); };
-
-  function apply(){
+  function applyFilters() {
     const q = searchBox.value.toLowerCase();
+
     filteredData = allData.filter(x =>
-      (!q ||   x.name.toLowerCase().includes(q) ||   x.mobile.includes(q) ||  x.email.toLowerCase().includes(q)
-) &&  (!selDept || x.department === selDept) &&
+      (!q ||
+        x.name.toLowerCase().includes(q) ||
+        x.mobile.includes(q) ||
+        x.email.toLowerCase().includes(q)
+      ) &&
+      (!selDept || x.department === selDept) &&
       (!selDesig || x.designation === selDesig) &&
       (!selDistrict || x.district === selDistrict)
     );
+
     render();
   }
 
-  prevBtn.onclick = () => { if(page>1){ page--; render(); } };
-  nextBtn.onclick = () => {
-    if(page * PAGE_SIZE < filteredData.length){ page++; render(); }
+  /* =========================
+     PAGINATION
+  ========================= */
+  prevBtn.onclick = () => {
+    if (page > 1) {
+      page--;
+      render();
+    }
   };
 
-  function render(){
-    const s=(page-1)*PAGE_SIZE;
-    const e=s+PAGE_SIZE;
+  nextBtn.onclick = () => {
+    if (page * PAGE_SIZE < filteredData.length) {
+      page++;
+      render();
+    }
+  };
 
-    cards.innerHTML = filteredData.slice(s,e).map(u=>`
+  /* =========================
+     RENDER
+  ========================= */
+  function render() {
+    const start = (page - 1) * PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+
+    cards.innerHTML = filteredData.slice(start, end).map(u => `
       <div class="card">
         <div class="name">${u.name}</div>
         <div class="meta">${u.designation}</div>
         <div class="meta">${u.department}</div>
         <div class="meta">${u.district}</div>
-        📞 ${u.mobile}<br>📧 ${u.email}
+        📞 ${u.mobile}<br>
+        📧 ${u.email}
       </div>
     `).join("");
 
     resultCount.textContent = `Total results: ${filteredData.length}`;
     pageInfo.textContent =
-      `Page ${page} / ${Math.ceil(filteredData.length / PAGE_SIZE)}`;
+      `Page ${page} / ${Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE))}`;
   }
 
-  /* CLOSE DROPDOWNS ON OUTSIDE CLICK */
+  /* =========================
+     CLOSE DROPDOWNS ON OUTSIDE CLICK
+  ========================= */
   document.addEventListener("click", e => {
     if (!e.target.closest(".dropdown")) {
       deptDropdown.style.display = "none";
