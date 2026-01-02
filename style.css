@@ -154,3 +154,13 @@ h1 {
   border: none;
   border-radius: 8px;
 }
+
+.reset-btn {
+  background: #6a11cb;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 14px;
+  box-shadow: var(--shadow);
+}

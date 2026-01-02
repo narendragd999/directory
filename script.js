@@ -24,6 +24,7 @@ function initApp() {
   const cards = document.getElementById("cards");
   const resultCount = document.getElementById("resultCount");
   const searchBox = document.getElementById("searchBox");
+  const resetBtn = document.getElementById("resetBtn");
 
   const deptInput = document.getElementById("deptInput");
   const desigInput = document.getElementById("desigInput");
@@ -52,9 +53,9 @@ function initApp() {
         email:r["E-Mail ID"]||""
       }));
 
-    setup(deptInput,deptDropdown,unique("department"),v=>selDept=v);
-    setup(desigInput,desigDropdown,unique("designation"),v=>selDesig=v);
-    setup(districtInput,districtDropdown,unique("district"),v=>selDistrict=v);
+    setupDropdown(deptInput,deptDropdown,"Select Department",unique("department"),v=>selDept=v);
+    setupDropdown(desigInput,desigDropdown,"Select Designation",unique("designation"),v=>selDesig=v);
+    setupDropdown(districtInput,districtDropdown,"Select District / Block",unique("district"),v=>selDistrict=v);
 
     apply();
   });
@@ -63,28 +64,40 @@ function initApp() {
     return [...new Set(allData.map(x=>x[k]).filter(Boolean))].sort();
   }
 
-  function setup(input,menu,list,onSelect){
-    input.onfocus=()=>show(list);
-    input.oninput=()=>{show(list.filter(v=>v.toLowerCase().includes(input.value.toLowerCase())));onSelect("");};
+  function setupDropdown(input,menu,defaultText,list,onSelect){
+    input.onclick=()=>render(list);
 
-    function show(arr){
+    function render(arr){
       menu.innerHTML="";
-      arr.forEach(v=>{
-        const d=document.createElement("div");
-        d.className="dropdown-item";
-        d.textContent=v;
-        d.onclick=()=>{
-          input.value=v;
-          menu.style.display="none";
-          onSelect(v);
-          page=1;
-          apply();
-        };
-        menu.appendChild(d);
-      });
+      addOption(defaultText,"");
+      arr.forEach(v=>addOption(v,v));
       menu.style.display="block";
     }
+
+    function addOption(text,val){
+      const d=document.createElement("div");
+      d.className="dropdown-item";
+      d.textContent=text;
+      d.onclick=()=>{
+        input.value=text;
+        onSelect(val);
+        menu.style.display="none";
+        page=1;
+        apply();
+      };
+      menu.appendChild(d);
+    }
   }
+
+  resetBtn.onclick = () => {
+    searchBox.value = "";
+    deptInput.value = "Select Department";
+    desigInput.value = "Select Designation";
+    districtInput.value = "Select District / Block";
+    selDept = selDesig = selDistrict = "";
+    page = 1;
+    apply();
+  };
 
   searchBox.oninput=()=>{page=1;apply();};
 
