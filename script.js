@@ -156,8 +156,8 @@ function initApp() {
   function apply(){
     const q = searchBox.value.toLowerCase();
     filteredData = allData.filter(x =>
-      (!q || x.name.toLowerCase().includes(q) || x.mobile.includes(q)) &&
-      (!selDept || x.department === selDept) &&
+      (!q ||   x.name.toLowerCase().includes(q) ||   x.mobile.includes(q) ||  x.email.toLowerCase().includes(q)
+) &&  (!selDept || x.department === selDept) &&
       (!selDesig || x.designation === selDesig) &&
       (!selDistrict || x.district === selDistrict)
     );
