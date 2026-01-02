@@ -205,3 +205,15 @@ h1 {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+.phone-link,
+.email-link {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.phone-link:hover,
+.email-link:hover {
+  text-decoration: underline;
+}

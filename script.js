@@ -227,8 +227,8 @@ function initApp() {
         <div class="meta">${u.designation}</div>
         <div class="meta">${u.department}</div>
         <div class="meta">${u.district}</div>
-        📞 ${u.mobile}<br>
-        📧 ${u.email}
+        📞 <a href="tel:${u.mobile}" class="phone-link">${u.mobile}</a><br>
+      📧 <a href="mailto:${u.email}" class="email-link">${u.email}</a>
       </div>
     `).join("");
 
