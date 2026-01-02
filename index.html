@@ -8,13 +8,12 @@
                maximum-scale=1,
                user-scalable=no">
 <title>User Directory</title>
-
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<!-- 🔐 LOGIN SCREEN -->
+<!-- LOGIN -->
 <div id="loginScreen" class="login-screen">
   <div class="login-card">
     <h2>User Directory</h2>
@@ -24,50 +23,47 @@
   </div>
 </div>
 
-<!-- 🔓 MAIN APP -->
-<div id="app" style="display:none">
-  <div class="app">
+<!-- APP -->
+<div id="app" class="app hidden">
 
-    <h1>User Directory</h1>
+  <h1>User Directory</h1>
 
-    <input id="searchBox" class="input primary" placeholder="Search name or mobile">
+  <input id="searchBox" class="input primary"
+         placeholder="Search name or mobile">
 
-    <div class="filters">
-
-      <div class="filter-item">
-        <div class="dropdown">
-          <input id="deptInput" class="input" placeholder="Search Department">
-          <div id="deptDropdown" class="dropdown-menu"></div>
-        </div>
-      </div>
-
-      <div class="filter-item">
-        <div class="dropdown">
-          <input id="desigInput" class="input" placeholder="Search Designation">
-          <div id="desigDropdown" class="dropdown-menu"></div>
-        </div>
-      </div>
-
-      <div class="filter-item">
-        <div class="dropdown">
-          <input id="districtInput" class="input" placeholder="Search District">
-          <div id="districtDropdown" class="dropdown-menu"></div>
-        </div>
-      </div>
-
+  <div class="filters">
+    <div class="dropdown">
+      <input id="deptInput" class="input" placeholder="Search Department">
+      <div id="deptDropdown" class="dropdown-menu"></div>
     </div>
 
-    <div id="cards" class="cards"></div>
-
-    <div class="pagination">
-      <button id="prevBtn">◀ Prev</button>
-      <span id="pageInfo"></span>
-      <button id="nextBtn">Next ▶</button>
+    <div class="dropdown">
+      <input id="desigInput" class="input" placeholder="Search Designation">
+      <div id="desigDropdown" class="dropdown-menu"></div>
     </div>
 
+    <div class="dropdown">
+      <input id="districtInput" class="input" placeholder="Search District">
+      <div id="districtDropdown" class="dropdown-menu"></div>
+    </div>
   </div>
+
+  <div id="resultCount" class="result-count"></div>
+
+  <!-- SCROLLABLE CONTENT -->
+  <div class="content">
+    <div id="cards"></div>
+  </div>
+
+  <!-- STICKY PAGINATION -->
+  <div class="pagination">
+    <button id="prevBtn">◀ Prev</button>
+    <span id="pageInfo"></span>
+    <button id="nextBtn">Next ▶</button>
+  </div>
+
 </div>
 
-<script src="script.js?v=12"></script>
+<script src="script.js"></script>
 </body>
 </html>

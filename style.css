@@ -1,50 +1,32 @@
-/* =========================
-   GLOBAL RESET & MOBILE LOCK
-========================= */
+/* RESET */
 html, body {
   height: 100%;
-  width: 100%;
   margin: 0;
-  padding: 0;
   overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, system-ui;
   touch-action: manipulation;
 }
 
-* {
-  -webkit-tap-highlight-color: transparent;
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-/* =========================
-   THEME VARIABLES
-========================= */
+/* THEME */
 :root {
-  --purple: #6a11cb;
-  --blue: #3498db;
-  --shadow: 0 6px 16px rgba(0,0,0,.12);
+  --purple:#6a11cb;
+  --blue:#3498db;
+  --shadow:0 6px 16px rgba(0,0,0,.12);
 }
 
-/* =========================
-   BODY BACKGROUND
-========================= */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, system-ui;
-  background: linear-gradient(180deg, var(--purple), #fff);
+  background: linear-gradient(180deg,var(--purple),#fff);
 }
 
-/* =========================
-   LOGIN SCREEN
-========================= */
+/* LOGIN */
 .login-screen {
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
-  background: linear-gradient(180deg, var(--purple), #fff);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
 }
 
 .login-card {
@@ -57,180 +39,118 @@ body {
   box-shadow: 0 10px 30px rgba(0,0,0,.25);
 }
 
-.login-card h2 {
-  margin-bottom: 12px;
-}
-
 .login-card button {
   width: 100%;
   padding: 10px;
+  background: var(--blue);
+  color: #fff;
   border: none;
   border-radius: 10px;
-  background: var(--blue);
-  color: white;
-  font-size: 15px;
 }
 
-.error {
-  color: red;
-  font-size: 13px;
-  margin-top: 6px;
-}
+.error { color: red; font-size: 13px; }
 
-/* =========================
-   APP CONTAINER
-========================= */
+/* APP */
 .app {
-  width: 100%;
   max-width: 420px;
   height: 100vh;
-  margin: 0 auto;
+  margin: auto;
   padding: 12px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
 }
 
-/* =========================
-   HEADER
-========================= */
+.hidden { display: none; }
+
 h1 {
+  color: #fff;
   text-align: center;
-  color: white;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
-/* =========================
-   INPUTS
-========================= */
+/* INPUTS */
 .input {
-  width: 90%;
-  padding: 10px 12px;
+  width: 100%;
+  padding: 10px;
   border-radius: 12px;
   border: none;
   margin-bottom: 8px;
-  font-size: 14px;
   box-shadow: var(--shadow);
 }
 
-.primary {
-  font-size: 15px;
-}
+.primary { font-size: 15px; }
 
-/* =========================
-   FILTERS (STACKED)
-========================= */
+/* FILTERS */
 .filters {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.filter-item {
-  width: 100%;
-}
-
-/* =========================
-   DROPDOWN
-========================= */
-.dropdown {
-  position: relative;
-}
+/* DROPDOWN */
+.dropdown { position: relative; }
 
 .dropdown-menu {
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
-  background: white;
+  background: #fff;
   border-radius: 12px;
-  box-shadow: var(--shadow);
-  max-height: 220px;
+  max-height: 200px;
   overflow-y: auto;
   display: none;
-  z-index: 50;
+  box-shadow: var(--shadow);
+  z-index: 10;
 }
 
 .dropdown-item {
   padding: 10px;
-  font-size: 13px;
   cursor: pointer;
 }
 
-.dropdown-item:hover {
-  background: #f2f2f2;
+.dropdown-item:hover { background: #f2f2f2; }
+
+/* RESULT COUNT */
+.result-count {
+  font-size: 13px;
+  margin: 6px 0;
 }
 
-/* =========================
-   CARDS
-========================= */
-.cards {
-  margin-top: 12px;
+/* CONTENT */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 70px;
 }
 
+/* CARDS */
 .card {
-  background: white;
+  background: #fff;
   border-radius: 14px;
   padding: 12px;
   margin-bottom: 10px;
   box-shadow: var(--shadow);
 }
 
-.card .name {
-  font-weight: 600;
-}
+.card .name { font-weight: 600; }
+.card .meta { font-size: 12px; color: #555; }
 
-.card .meta {
-  font-size: 12px;
-  color: #555;
-}
-
-.card a {
-  color: var(--blue);
-  text-decoration: none;
-}
-
-/* =========================
-   PAGINATION
-========================= */
+/* PAGINATION */
 .pagination {
+  position: sticky;
+  bottom: 0;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
   gap: 8px;
-  margin: 14px 0;
+  background: #fff;
+  padding: 8px;
+  box-shadow: 0 -4px 12px rgba(0,0,0,.15);
 }
 
 .pagination button {
   flex: 1;
   background: var(--blue);
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 8px;
-  padding: 6px 12px;
-}
-
-/* =========================
-   TABLET
-========================= */
-@media (min-width: 768px) {
-  .app {
-    max-width: 520px;
-  }
-}
-
-/* =========================
-   DESKTOP
-========================= */
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .app {
-    max-width: 600px;
-    height: 90vh;
-    border-radius: 16px;
-  }
 }

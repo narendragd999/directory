@@ -1,70 +1,28 @@
-/* ===============================
-   CONFIG
-================================ */
-const APP_PASSWORD = "1254"; // 🔐 change this
+const APP_PASSWORD = "1254";
 const SHEET_URL =
   "https://opensheet.elk.sh/1mm90Evf_AzQyr_vBcvhd9TstJffPVqeukQU1SdgS2fk/Sheet1";
 const PAGE_SIZE = 20;
 
-/* ===============================
-   LOGIN ELEMENTS
-================================ */
+/* LOGIN */
 const loginScreen = document.getElementById("loginScreen");
 const app = document.getElementById("app");
 const loginBtn = document.getElementById("loginBtn");
 const appPassword = document.getElementById("appPassword");
 const loginError = document.getElementById("loginError");
 
-/* ===============================
-   APP STATE
-================================ */
-let allData = [];
-let filteredData = [];
-let page = 1;
-
-let selectedDept = "";
-let selectedDesig = "";
-let selectedDistrict = "";
-
-/* ===============================
-   CHECK LOGIN FIRST
-================================ */
-if (sessionStorage.getItem("APP_UNLOCKED") === "YES") {
-  unlockApp();
-} else {
-  lockApp();
-}
-
 loginBtn.onclick = () => {
   if (appPassword.value === APP_PASSWORD) {
-    sessionStorage.setItem("APP_UNLOCKED", "YES");
-    unlockApp();
+    loginScreen.style.display = "none";
+    app.classList.remove("hidden");
+    initApp();
   } else {
     loginError.textContent = "Wrong password";
   }
 };
 
-/* ===============================
-   LOCK / UNLOCK
-================================ */
-function lockApp() {
-  loginScreen.style.display = "flex";
-  app.style.display = "none";
-}
-
-function unlockApp() {
-  loginScreen.style.display = "none";
-  app.style.display = "block";
-  initApp(); // 🔑 START APP ONLY HERE
-}
-
-/* ===============================
-   MAIN APP INIT
-================================ */
 function initApp() {
-
-  /* ELEMENTS (INSIDE INIT) */
   const cards = document.getElementById("cards");
+  const resultCount = document.getElementById("resultCount");
   const searchBox = document.getElementById("searchBox");
 
   const deptInput = document.getElementById("deptInput");
@@ -79,112 +37,84 @@ function initApp() {
   const nextBtn = document.getElementById("nextBtn");
   const pageInfo = document.getElementById("pageInfo");
 
-  /* FETCH DATA */
-  fetch(SHEET_URL)
-    .then(r => r.json())
-    .then(raw => {
-      allData = raw
-        .filter(r => r["Officer Name"] && r["Contact No."])
-        .map(r => ({
-          name: r["Officer Name"].trim(),
-          designation: (r["Designation"] || "").trim(),
-          department: (r["Office / Department"] || "").trim(),
-          district: (r["Place / District"] || "").trim(),
-          mobile: r["Contact No."].toString().trim(),
-          email: (r["E-Mail ID"] || "").trim()
-        }));
+  let allData = [], filteredData = [];
+  let page = 1;
+  let selDept="", selDesig="", selDistrict="";
 
-      setupDropdown(deptInput, deptDropdown, unique("department"), v => selectedDept = v);
-      setupDropdown(desigInput, desigDropdown, unique("designation"), v => selectedDesig = v);
-      setupDropdown(districtInput, districtDropdown, unique("district"), v => selectedDistrict = v);
+  fetch(SHEET_URL).then(r=>r.json()).then(data=>{
+    allData = data.filter(r=>r["Officer Name"] && r["Contact No."])
+      .map(r=>({
+        name:r["Officer Name"],
+        designation:r["Designation"]||"",
+        department:r["Office / Department"]||"",
+        district:r["Place / District"]||"",
+        mobile:r["Contact No."],
+        email:r["E-Mail ID"]||""
+      }));
 
-      applyFilters();
-    });
+    setup(deptInput,deptDropdown,unique("department"),v=>selDept=v);
+    setup(desigInput,desigDropdown,unique("designation"),v=>selDesig=v);
+    setup(districtInput,districtDropdown,unique("district"),v=>selDistrict=v);
 
-  /* HELPERS */
-  function unique(key) {
-    return [...new Set(allData.map(x => x[key]).filter(Boolean))].sort();
+    apply();
+  });
+
+  function unique(k){
+    return [...new Set(allData.map(x=>x[k]).filter(Boolean))].sort();
   }
 
-  function setupDropdown(input, menu, values, onSelect) {
-    function render(list) {
-      menu.innerHTML = "";
-      list.forEach(v => {
-        const item = document.createElement("div");
-        item.className = "dropdown-item";
-        item.textContent = v;
-        item.onclick = e => {
-          e.stopPropagation();
-          input.value = v;
+  function setup(input,menu,list,onSelect){
+    input.onfocus=()=>show(list);
+    input.oninput=()=>{show(list.filter(v=>v.toLowerCase().includes(input.value.toLowerCase())));onSelect("");};
+
+    function show(arr){
+      menu.innerHTML="";
+      arr.forEach(v=>{
+        const d=document.createElement("div");
+        d.className="dropdown-item";
+        d.textContent=v;
+        d.onclick=()=>{
+          input.value=v;
+          menu.style.display="none";
           onSelect(v);
-          menu.style.display = "none";
-          page = 1;
-          applyFilters();
+          page=1;
+          apply();
         };
-        menu.appendChild(item);
+        menu.appendChild(d);
       });
+      menu.style.display="block";
     }
-
-    render(values);
-
-    input.onfocus = () => {
-      render(values);
-      menu.style.display = "block";
-    };
-
-    input.oninput = () => {
-      render(values.filter(v => v.toLowerCase().includes(input.value.toLowerCase())));
-      menu.style.display = "block";
-      onSelect("");
-    };
   }
 
-  /* FILTER */
-  searchBox.oninput = () => { page = 1; applyFilters(); };
+  searchBox.oninput=()=>{page=1;apply();};
 
-  function applyFilters() {
-    const q = searchBox.value.toLowerCase();
-
-    filteredData = allData.filter(x =>
-      (!q || x.name.toLowerCase().includes(q) || x.mobile.includes(q)) &&
-      (!selectedDept || x.department === selectedDept) &&
-      (!selectedDesig || x.designation === selectedDesig) &&
-      (!selectedDistrict || x.district === selectedDistrict)
+  function apply(){
+    const q=searchBox.value.toLowerCase();
+    filteredData = allData.filter(x=>
+      (!q||x.name.toLowerCase().includes(q)||x.mobile.includes(q)) &&
+      (!selDept||x.department===selDept) &&
+      (!selDesig||x.designation===selDesig) &&
+      (!selDistrict||x.district===selDistrict)
     );
-
     render();
   }
 
-  /* PAGINATION */
-  prevBtn.onclick = () => { if (page > 1) { page--; render(); } };
-  nextBtn.onclick = () => { if (page * PAGE_SIZE < filteredData.length) { page++; render(); } };
+  prevBtn.onclick=()=>{if(page>1){page--;render();}};
+  nextBtn.onclick=()=>{if(page*PAGE_SIZE<filteredData.length){page++;render();}};
 
-  /* RENDER */
-  function render() {
-    const start = (page - 1) * PAGE_SIZE;
-    const end = start + PAGE_SIZE;
-
-    cards.innerHTML = filteredData.slice(start, end).map(u => `
+  function render(){
+    const s=(page-1)*PAGE_SIZE;
+    const e=s+PAGE_SIZE;
+    cards.innerHTML = filteredData.slice(s,e).map(u=>`
       <div class="card">
         <div class="name">${u.name}</div>
         <div class="meta">${u.designation}</div>
         <div class="meta">${u.department}</div>
         <div class="meta">${u.district}</div>
-        📞 <a href="tel:${u.mobile}">${u.mobile}</a><br>
-        📧 ${u.email}
+        📞 ${u.mobile}<br>📧 ${u.email}
       </div>
     `).join("");
-
-    pageInfo.textContent =
-      filteredData.length === 0
-        ? "No results"
-        : `Page ${page} of ${Math.ceil(filteredData.length / PAGE_SIZE)}`;
+    resultCount.textContent = `Total results: ${filteredData.length}`;
+    pageInfo.textContent = `Page ${page} / ${Math.ceil(filteredData.length/PAGE_SIZE)}`;
   }
-
-  /* CLOSE DROPDOWNS */
-  document.addEventListener("click", () => {
-    deptDropdown.style.display = "none";
-    desigDropdown.style.display = "none";
-    districtDropdown.style.display = "none";
-  });
 }
