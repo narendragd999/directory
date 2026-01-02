@@ -76,12 +76,18 @@ function initApp() {
   /* 🔍 SEARCHABLE DROPDOWN (RESTORED) */
   function searchableDropdown(input, menu, placeholder, list, onSelect) {
 
-    function render(filtered) {
+    let selectedValue = "";
+
+    // set initial placeholder
+    input.value = placeholder;
+
+    function render(items) {
       menu.innerHTML = "";
 
+      // 🔹 Clear option
       addItem(placeholder, "");
 
-      filtered.forEach(v => addItem(v, v));
+      items.forEach(v => addItem(v, v));
 
       menu.style.display = "block";
     }
@@ -90,26 +96,40 @@ function initApp() {
       const d = document.createElement("div");
       d.className = "dropdown-item";
       d.textContent = text;
+
       d.onclick = () => {
-        input.value = text;
-        onSelect(value);
+        selectedValue = value;
+        input.value = value || placeholder;
         menu.style.display = "none";
+        onSelect(value);
         page = 1;
         apply();
       };
+
       menu.appendChild(d);
     }
 
+    // 🔍 Enable typing
     input.readOnly = false;
 
-    input.onfocus = () => render(list);
+    // Focus → show full list
+    input.onfocus = () => {
+      input.select();
+      render(list);
+    };
 
+    // Typing → filter list (THIS WAS BROKEN BEFORE)
     input.oninput = () => {
       const q = input.value.toLowerCase();
-      render(list.filter(v => v.toLowerCase().includes(q)));
-      onSelect(""); // invalidate until selected
+      selectedValue = "";        // invalidate selection while typing
+      onSelect("");              // no filter until user clicks option
+
+      render(list.filter(v =>
+        v.toLowerCase().includes(q)
+      ));
     };
   }
+
 
   /* RESET */
   resetBtn.onclick = () => {
