@@ -164,3 +164,44 @@ h1 {
   font-size: 14px;
   box-shadow: var(--shadow);
 }
+
+/* =========================
+   LOADER OVERLAY
+========================= */
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.loader-card {
+  background: white;
+  padding: 20px 26px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+.loader-text {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #333;
+}
+
+/* FLATICON STYLE SPINNER */
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #e0e0e0;
+  border-top: 5px solid #6a11cb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
